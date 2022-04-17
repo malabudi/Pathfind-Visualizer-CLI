@@ -1,0 +1,2 @@
+# Pathfind-Visualizer-CLI
+For the final project in my C++ class we were given a choice to pick what we wanted to create for our final project, as long as there is OOP and data structures. I have decided to create a pathfind visualizer in C++, which will visualize the DFS, BFS, and A* pathfinding algorithms. The user is also able to decide where the start and goal positions are, as well as any obstacles in between them.
