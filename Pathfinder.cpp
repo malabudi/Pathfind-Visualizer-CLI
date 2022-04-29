@@ -9,6 +9,12 @@ const std::map< std::string, std::pair<int, int> > PathFinder::offsetCoord {
 };
 
 // Constructors
+PathFinder::PathFinder()
+{
+    this->start = {0, 0};
+    this->goal = {0, 0};
+}
+
 PathFinder::PathFinder(std::pair<int, int> start, std::pair<int, int> goal, std::vector<std::vector<char>> boardMap)
 {
     this->start = start;
@@ -35,9 +41,14 @@ std::pair<int, int> PathFinder::getGoal()
 
 
 // Sets
-void PathFinder::setBoardMap(int xCoord, int yCoord)
+void PathFinder::setBoardMap(int xCoord, int yCoord, char symbol)
 {
-    this->boardMap[xCoord][yCoord] = 'X';
+    this->boardMap[xCoord][yCoord] = symbol;
+}
+
+void PathFinder::setBoardMap(std::vector<std::vector<char>> boardMap)
+{
+    this->boardMap = boardMap;
 }
 
 void PathFinder::setStart(std::pair<int, int> start)
@@ -82,16 +93,31 @@ std::vector< std::pair<int, int> > PathFinder::createFinalPath(std::pair<int, in
 }
 
 
-void PathFinder::displayMap() {
+void PathFinder::displayMap(const std::vector<std::vector<char>>& boardMap) {
     std::cout << "----------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << "\t";
 
-    for (std::vector<char> row : this->boardMap)
+    // Display what column is being shown numerically
+    for (int i = 0; i < boardMap[0].size(); ++i)
     {
-        std::cout << " ";
+        // Single digits take up more white space
+        if ((i + 1) < 10)
+            std::cout << "  " << i + 1 << " ";
 
-        for (char col : row)
+        // Double digits take up less space, no triple digits since maps will not be that big for a command line interface
+        else
+            std::cout << " " << i + 1 << " ";
+    }
+
+    std::cout << std::endl;
+
+    for (int x = 0; x < boardMap.size(); ++x)
+    {
+        std::cout << " " << x + 1 << "\t| ";
+
+        for (int y = 0; y < boardMap[x].size(); ++y)
         {
-            std::cout << col << " | ";
+            std::cout << boardMap[x][y] << " | ";
         }
 
         std::cout << std::endl;

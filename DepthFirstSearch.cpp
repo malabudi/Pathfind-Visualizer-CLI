@@ -1,9 +1,15 @@
 #include "DepthFirstSearch.h"
 #include <stack>
 
+// Constructors
+DepthFirstSearch::DepthFirstSearch()
+:PathFinder() { }
+
 DepthFirstSearch::DepthFirstSearch(std::pair<int, int> start, std::pair<int, int> goal, std::vector<std::vector<char>> boardMap)
 :PathFinder(start, goal, boardMap) { }
 
+
+// Methods
 std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
 {
     std::map< std::pair<int, int>, std::pair<int, int> >::iterator iterCoords;
@@ -22,7 +28,7 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
         {this->getStart(), emptyPos}
     };
 
-    this->displayMap();
+    this->displayMap(this->getBoardMap());
 
     // Begin implementing DFS after setting up
     while (pathStack.empty() == false)
@@ -50,8 +56,8 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
                 coordsDiscovered.insert(std::make_pair(neighbor, current));
 
                 // Update and display the map
-                this->setBoardMap(neighbor.first, neighbor.second);
-                this->displayMap();
+                this->setBoardMap(neighbor.first, neighbor.second, 'X');
+                this->displayMap(this->getBoardMap());
             }
 
         }

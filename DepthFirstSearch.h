@@ -6,6 +6,7 @@
 class DepthFirstSearch : public PathFinder
 {
     public:
+        DepthFirstSearch();
         DepthFirstSearch(std::pair<int, int> start, std::pair<int, int> goal, std::vector<std::vector<char>> boardMap);
 
         virtual std::vector< std::pair<int, int> > findPath();
