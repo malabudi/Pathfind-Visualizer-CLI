@@ -68,10 +68,9 @@ bool PathFinder::isValidPosition(std::pair<int, int> position, std::vector<std::
     int xPos = position.first;
     int yPos = position.second;
     int rowLen = boardMap.size();
-    int rowCol = boardMap[0].size();
+    int colLen = boardMap[0].size();
 
-    //              If the position selected is within the map               AND     If the position is not on a obstacle
-    return ( ( (xPos < rowLen && xPos >= 0) && (yPos < rowCol && yPos >= 0) ) &&  (boardMap[xPos][yPos] != '*') );
+    return ( ( (xPos < rowLen && xPos >= 0) && (yPos < colLen && yPos >= 0) ) &&  (boardMap[xPos][yPos] != '*') );
 }
 
 
