@@ -17,6 +17,7 @@ class PathFinder
         static const std::map< std::string, std::pair<int, int> > offsetCoord;
 
         bool isValidPosition(std::pair<int, int> position, std::vector<std::vector<char>> boardMap);
+        void drawPath(std::vector< std::pair<int, int> > path, std::vector<std::vector<char>> boardMap);
 
         // Returns the vector of the path created
         std::vector< std::pair<int, int> > createFinalPath(std::pair<int, int> start, std::pair<int, int> goal, std::map< std::pair<int, int>, std::pair<int, int> > coordsDiscovered);

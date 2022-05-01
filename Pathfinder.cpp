@@ -2,10 +2,10 @@
 #include <iostream>
 
 const std::map< std::string, std::pair<int, int> > PathFinder::offsetCoord {
-    {"right", {1, 0} },
-    {"up", {0, 1} },
-    {"left", {-1, 0} },
-    {"down", {0, -1} }
+    {"right", {0, 1} },
+    {"left", {0, -1} },
+    {"up", {-1, 0} },
+    {"down", {1, 0} }
 };
 
 // Constructors
@@ -41,9 +41,9 @@ std::pair<int, int> PathFinder::getGoal()
 
 
 // Sets
-void PathFinder::setBoardMap(int xCoord, int yCoord, char symbol)
+void PathFinder::setBoardMap(int rowCoord, int colCoord, char symbol)
 {
-    this->boardMap[xCoord][yCoord] = symbol;
+    this->boardMap[rowCoord][colCoord] = symbol;
 }
 
 void PathFinder::setBoardMap(std::vector<std::vector<char>> boardMap)
@@ -63,14 +63,23 @@ void PathFinder::setGoal(std::pair<int, int> goal)
 
 
 // Methods
+void drawPath(std::vector< std::pair<int, int> > path, std::vector<std::vector<char>> boardMap)
+{
+        // ADD CODE HERE AND DRAW PATH ON MAP WITH O
+}
+
+
+
+
+
 bool PathFinder::isValidPosition(std::pair<int, int> position, std::vector<std::vector<char>> boardMap)
 {
-    int xPos = position.first;
-    int yPos = position.second;
+    int i = position.first;
+    int j = position.second;
     int rowLen = boardMap.size();
     int colLen = boardMap[0].size();
 
-    return ( ( (xPos < rowLen && xPos >= 0) && (yPos < colLen && yPos >= 0) ) &&  (boardMap[xPos][yPos] != '*') );
+    return ( ( (i < rowLen && i >= 0) && (j < colLen && j >= 0) ) &&  (boardMap[i][j] != '*') );
 }
 
 

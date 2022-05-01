@@ -1,6 +1,8 @@
 #include "DepthFirstSearch.h"
 #include <stack>
 
+#include <iostream>
+
 // Constructors
 DepthFirstSearch::DepthFirstSearch()
 :PathFinder() { }
@@ -13,7 +15,7 @@ DepthFirstSearch::DepthFirstSearch(std::pair<int, int> start, std::pair<int, int
 std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
 {
     std::map< std::pair<int, int>, std::pair<int, int> >::iterator iterCoords;
-    int xOffset, yOffset;
+    int rowOffset, colOffset;
     std::pair<int, int> current, neighbor;
 
     // Add a "empty" position indicating its the beginning of the path with -1, -1
@@ -42,16 +44,17 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
         // Offset the current position in all four directions
         for (auto iter = PathFinder::offsetCoord.begin(); iter != PathFinder::offsetCoord.end(); ++iter)
         {
-            xOffset = (iter->second).first;
-            yOffset = (iter->second).second;
+            rowOffset = (iter->second).first;
+            colOffset = (iter->second).second;
 
-            neighbor.first = current.first + xOffset;
-            neighbor.second = current.second + yOffset;
+            neighbor.first = current.first + rowOffset;
+            neighbor.second = current.second + colOffset;
 
             // Use a iterator to check if neighbor already exists in the map or not
             iterCoords = coordsDiscovered.find(neighbor);
 
-            if (PathFinder::isValidPosition(neighbor, this->getBoardMap()) && iterCoords == coordsDiscovered.end()) {
+            if (PathFinder::isValidPosition(neighbor, this->getBoardMap()) && iterCoords == coordsDiscovered.end())
+            {
                 pathStack.push(neighbor);
                 coordsDiscovered.insert(std::make_pair(neighbor, current));
 

@@ -26,9 +26,13 @@ if 2 then book it END
 void trimWhiteSpace(std::string& str);
 void displayMainMenu();
 void displayMapMenu();
+void displayAlgoMenu();
 void askMapDimensions(int& rowSize, int& colSize);
 void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap);
 void validateMenuChoice(std::string& choice, std::string choiceOne, std::string choiceTwo, std::string choiceThree);
+void validateMapDimensions(int& rowSize, int& colSize);
+void validateChosenPosition(int& xPos, int& yPos, const std::vector< std::vector<char> >& customMap);
+void validateObstacleChoice(std::string& choice);
 void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap);
 
 
@@ -38,103 +42,151 @@ int main()
 
     std::pair<int, int> start;
     std::pair<int, int> goal;
-    std::string choice;
+    std::string menuChoice;
     DepthFirstSearch objPathDFS;
 
     std::cout << "Welcome to the Pathfinding Visualizer\n" << std::endl;
 
-    while (choice.compare("quit") != 0)
+    while (menuChoice.compare("quit") != 0)
     {
         displayMainMenu();
-        std::getline(std::cin, choice);
-        std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower); // transforms the string to all lowercase
-        trimWhiteSpace(choice);
-        validateMenuChoice(choice, "pick", "create", "quit");
+        std::getline(std::cin, menuChoice);
+        std::transform(menuChoice.begin(), menuChoice.end(), menuChoice.begin(), ::tolower); // transforms the string to all lowercase
+        trimWhiteSpace(menuChoice);
+        validateMenuChoice(menuChoice, "pick", "create", "quit");
 
         // Picking a preset map
-        if (choice.compare("pick") == 0)
+        if (menuChoice.compare("pick") == 0)
         {
             displayMapMenu();
-            std::getline(std::cin, choice);
-            std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower);
-            validateMenuChoice(choice, "small", "medium", "large");
+            std::getline(std::cin, menuChoice);
+            std::transform(menuChoice.begin(), menuChoice.end(), menuChoice.begin(), ::tolower);
+            trimWhiteSpace(menuChoice);
+            validateMenuChoice(menuChoice, "small", "medium", "large");
 
-            if (choice.compare("small") == 0)
+            if (menuChoice.compare("small") == 0)
             {
                 userMap  = {
-                    {'S', '*', ' ', ' ', ' '},
+                    {'S', '*', ' ', ' ', 'G'},
                     {' ', '*', ' ', ' ', ' '},
-                    {' ', ' ', ' ', ' ', ' '},
-                    {'*', ' ', '*', ' ', 'G'},
+                    {' ', ' ', ' ', '*', ' '},
+                    {'*', ' ', '*', ' ', ' '},
                     {'*', ' ', '*', ' ', ' '}
                 };
 
                 start = {0, 0};
-                goal = {3, 4};
-
-                // temp - user must eventually pick algorithm
-
-                objPathDFS.setStart(start);
-                objPathDFS.setGoal(goal);
-                objPathDFS.setBoardMap(userMap);
-
-                std::vector< std::pair<int, int> > path = objPathDFS.findPath();
+                goal = {0, 4};
             }
         }
-        else if (choice.compare("create") == 0)
+        else if (menuChoice.compare("create") == 0)
         {
-            // Cant create obstacles yet, no validation yet
             createMap(start, goal, userMap);
         }
 
-        // Ask for DFS BFS or A* and validate choice
+
+        if (menuChoice.compare("quit") != 0)
+        {
+            displayAlgoMenu();
+            std::getline(std::cin, menuChoice);
+            std::transform(menuChoice.begin(), menuChoice.end(), menuChoice.begin(), ::tolower);
+            trimWhiteSpace(menuChoice);
+            validateMenuChoice(menuChoice, "dfs", "bfs", "astar");
+
+            if (menuChoice.compare("dfs") == 0)
+            {
+                objPathDFS.setStart(start);
+                objPathDFS.setGoal(goal);
+                objPathDFS.setBoardMap(userMap);
+                std::vector< std::pair<int, int> > path = objPathDFS.findPath();
+            }
+            else if (menuChoice.compare("bfs") == 0)
+            {
+
+            }
+            else if (menuChoice.compare("astar") == 0)
+            {
+
+            }
+        }
+
     }
-
-
-
-
-
 
     return 0;
 }
 
-
+// Map creation
 void askMapDimensions(int& rowSize, int& colSize)
 {
+    std::cout << "\nRule for creating map:" << std::endl;
+    std::cout << "Largest size allowed is 25x25, minimum size is 5x5 for any map you create" << std::endl;
+
     std::cout << "How many rows would you like to have for your map: ";
     std::cin >> rowSize;
 
     std::cout << "How many columns would you like to have for your map: ";
     std::cin >> colSize;
+
+    validateMapDimensions(rowSize, colSize);
 }
 
 void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap)
 {
     int startX, startY, goalX, goalY;
 
-    std::cout << "Please enter the x value for the starting position on the map: ";
+    std::cout << "Please enter the x value for the starting position \"S\" on the map: " << std::endl;
     std::cin >> startX;
-    std::cout << "Please enter the y value for the starting position on the map: ";
+    std::cout << "Please enter the y value for the starting position \"S\" on the map: " << std::endl;
     std::cin >> startY;
 
-    start.first = startX - 1;
-    start.second = startY - 1;
-    customMap[startX - 1][startY - 1] = 'S';
+    validateChosenPosition(startX, startY, customMap);
+
+    start.first = startY - 1;
+    start.second = startX - 1;
+    customMap[startY - 1][startX - 1] = 'S';
     PathFinder::displayMap(customMap);
 
 
-    std::cout << "Please enter the x value for the goal position on the map: ";
+    std::cout << "Please enter the x value for the goal position \"G\" on the map: " << std::endl;
     std::cin >> goalX;
-    std::cout << "Please enter the y value for the goal position on the map: ";
+    std::cout << "Please enter the y value for the goal position \"G\" on the map: " << std::endl;
     std::cin >> goalY;
 
-    goal.first = goalX - 1;
-    goal.second = goalY - 1;
-    customMap[goalX - 1][goalY - 1] = 'G';
+    validateChosenPosition(goalX, goalY, customMap);
+
+    goal.first = goalY - 1;
+    goal.second = goalX - 1;
+    customMap[goalY - 1][goalX - 1] = 'G';
     PathFinder::displayMap(customMap);
 }
 
+void askObstacles(std::vector< std::vector<char> >& customMap)
+{
+    // String instead of char is used in case the user enters more than one char, the input will not overflow into buffer
+    std::string choice;
+    int obstacleX, obstacleY;
+    std::cout << "Would you like to add a obstacle? (Y or N)" << std::endl;
+    std::getline(std::cin, choice);
 
+    validateObstacleChoice(choice);
+
+    while (choice.compare("Y") == 0)
+    {
+        std::cout << "Please enter the x value for where you want the obstacle \"*\" on the map: " << std::endl;
+        std::cin >> obstacleX;
+        std::cout << "Please enter the y value for where you want the obstacle \"*\" on the map: " << std::endl;
+        std::cin >> obstacleY;
+
+        validateChosenPosition(obstacleX, obstacleY, customMap);
+
+        customMap[obstacleY - 1][obstacleX - 1] = '*';
+        PathFinder::displayMap(customMap);
+
+        std::cin.ignore(1000, '\n');
+        std::cout << "Would you like to add another obstacle? (Y or N)" << std::endl;
+        std::getline(std::cin, choice);
+        validateObstacleChoice(choice);
+    }
+}
 
 void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap)
 {
@@ -143,6 +195,7 @@ void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vecto
 
     askMapDimensions(rowSize, colSize);
 
+    // Begin building the map
     std::vector<char> oneRow(colSize, ' ');
 
     for (int i = 0; i < rowSize; ++i)
@@ -150,9 +203,13 @@ void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vecto
 
     PathFinder::displayMap(customMap);
     askStartGoalPositions(start, goal, customMap);
+    std::cin.ignore(1000, '\n');
+
+    askObstacles(customMap);
 }
 
 
+// Menu
 void displayMainMenu()
 {
     std::cout << "Please choose from the commands below: " << std::endl;
@@ -169,18 +226,79 @@ void displayMapMenu()
 }
 
 
+void displayAlgoMenu()
+{
+    std::cout << "What algorithm would you like to use in order to pathfind" << std::endl;
+    std::cout << "DFS - Depth first search algorithm which uses a stack" << std::endl;
+    std::cout << "BFS - Breadth first search algorithm which uses a queue" << std::endl;
+    std::cout << "aStar - A Star or A* which uses a priority queue, this is the MOST efficient" << std::endl;
+}
+
+
+// Input Validation
+void validateObstacleChoice(std::string& choice)
+{
+    trimWhiteSpace(choice);
+
+    if (choice[0] >= 'a' && choice[0] <= 'z')
+        choice[0] -= 32;
+
+    while (choice.size() > 1 || (choice[0] != 'Y' && choice[0] != 'N'))
+    {
+        std::cout << "\nInvalid input, please either type Y or N" << std::endl;
+        std::cout << "Would you like to add a obstacle? (Y or N)" << std::endl;
+        std::getline(std::cin, choice);
+
+        trimWhiteSpace(choice);
+
+        if (choice[0] >= 'a' && choice[0] <= 'z')
+            choice[0] -= 32;
+    }
+}
+
+void validateChosenPosition(int& xPos, int& yPos, const std::vector< std::vector<char> >& customMap)
+{
+    int numRows = customMap.size();
+    int numCols = customMap[0].size();
+
+    while ((yPos <= 0 || yPos > numRows) || (xPos <= 0 || xPos > numCols) || (customMap[yPos - 1][xPos - 1] != ' '))
+    {
+        std::cout << "\nThe position you have chosen is either out of bounds or already taken, please try again." << std::endl;
+        std::cout << "Please enter the x value for the position on the map: " << std::endl;
+        std::cin >> xPos;
+        std::cout << "Please enter the y value for the position on the map: " << std::endl;
+        std::cin >> yPos;
+    }
+}
+
+void validateMapDimensions(int& rowSize, int& colSize)
+{
+    while ((rowSize < 5 || rowSize > 25) || (colSize < 5 || colSize > 25))
+    {
+        std::cout << "\nPlease make sure that the rows and columns are greater than 5x5 and less than 25x25" << std::endl;
+
+        std::cout << "How many rows would you like to have for your map: ";
+        std::cin >> rowSize;
+
+        std::cout << "How many columns would you like to have for your map: ";
+        std::cin >> colSize;
+    }
+}
+
 void validateMenuChoice(std::string& choice, std::string choiceOne, std::string choiceTwo, std::string choiceThree)
 {
     while (choice.compare(choiceOne) != 0 && choice.compare(choiceTwo) != 0 && choice.compare(choiceThree) != 0)
     {
-        std::cout << "The command you have entered is invalid" << std::endl;
-        displayMainMenu();
+        std::cout << "The command you have entered is invalid, please enter either of the following" << std::endl;
+        std::cout << choiceOne << std::endl;
+        std::cout << choiceTwo << std::endl;
+        std::cout << choiceThree << std::endl;
+
         std::getline(std::cin, choice);
         std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower);
         trimWhiteSpace(choice);
     }
 }
-
 
 void trimWhiteSpace(std::string& str)
 {
