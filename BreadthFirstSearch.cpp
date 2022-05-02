@@ -1,16 +1,15 @@
-#include "DepthFirstSearch.h"
-#include <stack>
+#include  "BreadthFirstSearch.h"
+#include <queue>
 
 // Constructors
-DepthFirstSearch::DepthFirstSearch()
+BreadthFirstSearch::BreadthFirstSearch()
 :PathFinder() { }
 
-DepthFirstSearch::DepthFirstSearch(std::pair<int, int> start, std::pair<int, int> goal, std::vector<std::vector<char>> boardMap)
+BreadthFirstSearch::BreadthFirstSearch(std::pair<int, int> start, std::pair<int, int> goal, std::vector<std::vector<char>> boardMap)
 :PathFinder(start, goal, boardMap) { }
 
 
-// Methods
-std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
+std::vector< std::pair<int, int> > BreadthFirstSearch::findPath()
 {
     std::vector< std::pair<int, int> > path;
     std::map< std::pair<int, int>, std::pair<int, int> >::iterator iterCoords;
@@ -20,22 +19,21 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
     // Add a "empty" position indicating its the beginning of the path with -1, -1
     std::pair<int, int> emptyPos(-1, -1);
 
-    // DFS Algorithm uses the stack data structure
-    std::stack<std::pair<int, int>> pathStack;
-    pathStack.push(this->getStart());
+    // BFS Algorithm uses the queue data structure
+    std::queue<std::pair<int, int>> pathQueue;
+    pathQueue.push(this->getStart());
 
-    // We will use a map to keep track of the successful path discovered, initialize the map with start key and nulLPos val
     std::map< std::pair<int, int>, std::pair<int, int> > coordsDiscovered {
         {this->getStart(), emptyPos}
     };
 
     this->displayMap(this->getBoardMap());
 
-    // Begin implementing DFS after setting up
-    while (pathStack.empty() == false)
+    // Begin implementing BFS after setting up
+    while (pathQueue.empty() == false)
     {
-        current = pathStack.top();
-        pathStack.pop();
+        current = pathQueue.front();
+        pathQueue.pop();
 
         if (current == this->getGoal())
         {
@@ -44,7 +42,6 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
             this->displayMap(this->getBoardMap());
             return path;
         }
-
 
         // Offset the current position in all four directions
         for (auto iter = PathFinder::offsetCoord.begin(); iter != PathFinder::offsetCoord.end(); ++iter)
@@ -60,14 +57,13 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
 
             if (PathFinder::isValidPosition(neighbor, this->getBoardMap()) && iterCoords == coordsDiscovered.end())
             {
-                pathStack.push(neighbor);
+                pathQueue.push(neighbor);
                 coordsDiscovered.insert(std::make_pair(neighbor, current));
 
-                // Update and display the map
+
                 this->setBoardMap(neighbor.first, neighbor.second, 'X');
                 this->displayMap(this->getBoardMap());
             }
-
         }
     }
 
@@ -75,3 +71,4 @@ std::vector< std::pair<int, int> > DepthFirstSearch::findPath()
     std::vector< std::pair<int, int> > pathNotFound = {{-1, -1}};
     return pathNotFound;
 }
+

@@ -1,26 +1,9 @@
 #include <iostream>
 #include <algorithm>
+#include <limits>
 #include "Pathfinder.h"
 #include "DepthFirstSearch.h"
-
-/*
-    Pick the size of your map, length & width
-    Where would you like the start position to be
-    Where do you want your goal
-    Where the obstacles should be
-
-
-Sub:
-What algorithms would you like to use to pathfind
----List algorithms
-    Draw map and find path
-
-Would you like to reset map and choose different algorithm
-1 - yes
-2 - no
-
-if 2 then book it END
-*/
+#include "BreadthFirstSearch.h"
 
 // Function prototypes
 void trimWhiteSpace(std::string& str);
@@ -33,17 +16,19 @@ void validateMenuChoice(std::string& choice, std::string choiceOne, std::string 
 void validateMapDimensions(int& rowSize, int& colSize);
 void validateChosenPosition(int& xPos, int& yPos, const std::vector< std::vector<char> >& customMap);
 void validateObstacleChoice(std::string& choice);
+void validateInt(int& input);
 void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap);
 
 
 int main()
 {
+    std::vector< std::pair<int, int> > path;
     std::vector< std::vector<char> > userMap;
-
     std::pair<int, int> start;
     std::pair<int, int> goal;
     std::string menuChoice;
-    DepthFirstSearch objPathDFS;
+    DepthFirstSearch pathFindDFS;
+    BreadthFirstSearch pathFindBFS;
 
     std::cout << "Welcome to the Pathfinding Visualizer\n" << std::endl;
 
@@ -68,14 +53,65 @@ int main()
             {
                 userMap  = {
                     {'S', '*', ' ', ' ', 'G'},
-                    {' ', '*', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' '},
                     {' ', ' ', ' ', '*', ' '},
-                    {'*', ' ', '*', ' ', ' '},
+                    {' ', ' ', '*', ' ', ' '},
                     {'*', ' ', '*', ' ', ' '}
                 };
 
                 start = {0, 0};
                 goal = {0, 4};
+            }
+            else if (menuChoice.compare("medium") == 0)
+            {
+                userMap  = {
+                    {' ', ' ', ' ', ' ', '*', ' ', ' ', '*', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*'},
+                    {' ', ' ', '*', ' ', '*', ' ', ' ', '*', ' ', ' '},
+                    {'*', 'S', ' ', ' ', '*', ' ', ' ', '*', ' ', ' '},
+                    {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', '*', ' ', ' ', ' ', '*', ' '},
+                    {' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' ', 'G'}
+                };
+
+                start = {4, 1};
+                goal = {9, 9};
+            }
+            else if (menuChoice.compare("large") == 0)
+            {
+                userMap  = {
+                    {' ', ' ', '*', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' '},
+                    {'*', ' ', '*', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {'*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', ' ', '*', ' ', ' ', ' '},
+                    {'*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', 'S', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', '*', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', '*', ' ', ' ', '*', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {'*', '*', ' ', '*', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', '*', ' ', '*', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', '*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', '*', '*', ' '},
+                    {' ', '*', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', ' ', ' ', '*', '*', '*', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {'*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*'},
+                    {' ', ' ', ' ', ' ', ' ', '*', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', 'G', ' ', '*'},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*'},
+                    {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
+                };
+
+                start = {4, 5};
+                goal = {21, 22};
             }
         }
         else if (menuChoice.compare("create") == 0)
@@ -94,21 +130,40 @@ int main()
 
             if (menuChoice.compare("dfs") == 0)
             {
-                objPathDFS.setStart(start);
-                objPathDFS.setGoal(goal);
-                objPathDFS.setBoardMap(userMap);
-                std::vector< std::pair<int, int> > path = objPathDFS.findPath();
+                pathFindDFS.setStart(start);
+                pathFindDFS.setGoal(goal);
+                pathFindDFS.setBoardMap(userMap);
+                path = pathFindDFS.findPath();
             }
             else if (menuChoice.compare("bfs") == 0)
             {
-
+                pathFindBFS.setStart(start);
+                pathFindBFS.setGoal(goal);
+                pathFindBFS.setBoardMap(userMap);
+                path = pathFindBFS.findPath();
             }
             else if (menuChoice.compare("astar") == 0)
             {
 
             }
+
+            // -1 means that each class returned path not found
+            if (path[0].first == -1)
+            {
+                std::cout << "\nPath not found!\n" << std::endl;
+            }
+            else
+            {
+                std::cout << "\nPath found!" << std::endl;
+                std::cout << "The X represents all coordinates or nodes discovered by the AI" << std::endl;
+                std::cout << "The O represents the path found and traveled beginning from S towards the goal G while avoiding the obstacles *\n" << std::endl;
+            }
         }
 
+        start = {};
+        goal = {};
+        userMap.clear();
+        path.clear();
     }
 
     return 0;
@@ -123,9 +178,12 @@ void askMapDimensions(int& rowSize, int& colSize)
     std::cout << "How many rows would you like to have for your map: ";
     std::cin >> rowSize;
 
+    validateInt(rowSize);
+
     std::cout << "How many columns would you like to have for your map: ";
     std::cin >> colSize;
 
+    validateInt(colSize);
     validateMapDimensions(rowSize, colSize);
 }
 
@@ -135,7 +193,9 @@ void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal
 
     std::cout << "Please enter the x value for the starting position \"S\" on the map: " << std::endl;
     std::cin >> startX;
+    validateInt(startX);
     std::cout << "Please enter the y value for the starting position \"S\" on the map: " << std::endl;
+    validateInt(startY);
     std::cin >> startY;
 
     validateChosenPosition(startX, startY, customMap);
@@ -147,8 +207,10 @@ void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal
 
 
     std::cout << "Please enter the x value for the goal position \"G\" on the map: " << std::endl;
+    validateInt(goalX);
     std::cin >> goalX;
     std::cout << "Please enter the y value for the goal position \"G\" on the map: " << std::endl;
+    validateInt(goalY);
     std::cin >> goalY;
 
     validateChosenPosition(goalX, goalY, customMap);
@@ -173,15 +235,17 @@ void askObstacles(std::vector< std::vector<char> >& customMap)
     {
         std::cout << "Please enter the x value for where you want the obstacle \"*\" on the map: " << std::endl;
         std::cin >> obstacleX;
+        validateInt(obstacleX);
         std::cout << "Please enter the y value for where you want the obstacle \"*\" on the map: " << std::endl;
         std::cin >> obstacleY;
+        validateInt(obstacleY);
 
         validateChosenPosition(obstacleX, obstacleY, customMap);
 
         customMap[obstacleY - 1][obstacleX - 1] = '*';
         PathFinder::displayMap(customMap);
 
-        std::cin.ignore(1000, '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Would you like to add another obstacle? (Y or N)" << std::endl;
         std::getline(std::cin, choice);
         validateObstacleChoice(choice);
@@ -203,7 +267,7 @@ void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vecto
 
     PathFinder::displayMap(customMap);
     askStartGoalPositions(start, goal, customMap);
-    std::cin.ignore(1000, '\n');
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     askObstacles(customMap);
 }
@@ -222,7 +286,9 @@ void displayMainMenu()
 void displayMapMenu()
 {
     std::cout << "What map would you like to pick from below: " << std::endl;
-    std::cout << "small - A small 5 x 5 map with some obstacles and fairly easy pathfinding." << std::endl;
+    std::cout << "small - A small 5 x 5 map with few obstacles and fairly easy pathfinding." << std::endl;
+    std::cout << "medium - A medium 10 x 10 map with moderate obstacles and decently difficult pathfinding." << std::endl;
+    std::cout << "large - A large 25 x 25 map with many obstacles and difficult pathfinding (will be the slowest)." << std::endl;
 }
 
 
@@ -236,6 +302,18 @@ void displayAlgoMenu()
 
 
 // Input Validation
+void validateInt(int& input)
+{
+    while (std::cin.fail())
+    {
+        std::cin.clear(); // clear fail bit
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        std::cout << "Invalid Input, Please enter an integer" << std::endl;
+        std::cin >> input;
+      }
+}
+
 void validateObstacleChoice(std::string& choice)
 {
     trimWhiteSpace(choice);

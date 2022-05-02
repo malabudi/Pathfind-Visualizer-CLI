@@ -63,14 +63,11 @@ void PathFinder::setGoal(std::pair<int, int> goal)
 
 
 // Methods
-void drawPath(std::vector< std::pair<int, int> > path, std::vector<std::vector<char>> boardMap)
+void PathFinder::drawPath(std::vector< std::pair<int, int> > path, std::vector<std::vector<char>> boardMap)
 {
-        // ADD CODE HERE AND DRAW PATH ON MAP WITH O
+    for (std::pair<int, int> coordinates :  path)
+        this->setBoardMap(coordinates.first, coordinates.second, 'O');
 }
-
-
-
-
 
 bool PathFinder::isValidPosition(std::pair<int, int> position, std::vector<std::vector<char>> boardMap)
 {
@@ -102,7 +99,7 @@ std::vector< std::pair<int, int> > PathFinder::createFinalPath(std::pair<int, in
 
 
 void PathFinder::displayMap(const std::vector<std::vector<char>>& boardMap) {
-    std::cout << "----------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
     std::cout << "\t";
 
     // Display what column is being shown numerically
@@ -131,5 +128,5 @@ void PathFinder::displayMap(const std::vector<std::vector<char>>& boardMap) {
         std::cout << std::endl;
     }
 
-    std::cout << "----------------------------------------------------------------------------------------------\n" << std::endl;
+    std::cout << "---------------------------------------------------------------------------------------------------------------------\n" << std::endl;
 }
