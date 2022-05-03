@@ -4,6 +4,7 @@
 #include "Pathfinder.h"
 #include "DepthFirstSearch.h"
 #include "BreadthFirstSearch.h"
+#include "AStar.h"
 
 // Function prototypes
 void trimWhiteSpace(std::string& str);
@@ -29,6 +30,7 @@ int main()
     std::string menuChoice;
     DepthFirstSearch pathFindDFS;
     BreadthFirstSearch pathFindBFS;
+    AStar pathFindAStar;
 
     std::cout << "Welcome to the Pathfinding Visualizer\n" << std::endl;
 
@@ -93,14 +95,14 @@ int main()
                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', '*', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {' ', ' ', '*', ' ', ' ', '*', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                    {'*', '*', ' ', '*', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                    {'*', '*', ' ', '*', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' '},
                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {' ', '*', ' ', '*', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                    {' ', '*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', '*', '*', ' '},
+                    {' ', '*', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', ' ', '*', ' '},
                     {' ', '*', ' ', ' ', ' ', ' ', '*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                    {' ', ' ', ' ', '*', '*', '*', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
+                    {' ', ' ', ' ', '*', '*', '*', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*'},
                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*'},
                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                     {'*', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '*', ' ', '*'},
@@ -144,7 +146,10 @@ int main()
             }
             else if (menuChoice.compare("astar") == 0)
             {
-
+                pathFindAStar.setStart(start);
+                pathFindAStar.setGoal(goal);
+                pathFindAStar.setBoardMap(userMap);
+                path = pathFindAStar.findPath();
             }
 
             // -1 means that each class returned path not found
@@ -164,6 +169,8 @@ int main()
         goal = {};
         userMap.clear();
         path.clear();
+
+        std::cout << "\nThank you for using the Pathfinding visualizer!" << std::endl;
     }
 
     return 0;
@@ -276,7 +283,7 @@ void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vecto
 // Menu
 void displayMainMenu()
 {
-    std::cout << "Please choose from the commands below: " << std::endl;
+    std::cout << "\nPlease choose from the commands below: " << std::endl;
     std::cout << "pick - pick between a few maps varying in size to pathfind" << std::endl;
     std::cout << "create - create a map of your own by providing the size, and locations of the start goal and obstacles" << std::endl;
     std::cout << "quit - close the program" << std::endl;
@@ -285,7 +292,7 @@ void displayMainMenu()
 
 void displayMapMenu()
 {
-    std::cout << "What map would you like to pick from below: " << std::endl;
+    std::cout << "\nWhat map would you like to pick from below: " << std::endl;
     std::cout << "small - A small 5 x 5 map with few obstacles and fairly easy pathfinding." << std::endl;
     std::cout << "medium - A medium 10 x 10 map with moderate obstacles and decently difficult pathfinding." << std::endl;
     std::cout << "large - A large 25 x 25 map with many obstacles and difficult pathfinding (will be the slowest)." << std::endl;
@@ -294,10 +301,10 @@ void displayMapMenu()
 
 void displayAlgoMenu()
 {
-    std::cout << "What algorithm would you like to use in order to pathfind" << std::endl;
+    std::cout << "\nWhat algorithm would you like to use in order to pathfind" << std::endl;
     std::cout << "DFS - Depth first search algorithm which uses a stack" << std::endl;
     std::cout << "BFS - Breadth first search algorithm which uses a queue" << std::endl;
-    std::cout << "aStar - A Star or A* which uses a priority queue, this is the MOST efficient" << std::endl;
+    std::cout << "aStar - A Star or A* which uses a priority queue, this is the most quickest and efficient of the three" << std::endl;
 }
 
 
