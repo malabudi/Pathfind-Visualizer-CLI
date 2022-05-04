@@ -5,6 +5,7 @@
 #include "DepthFirstSearch.h"
 #include "BreadthFirstSearch.h"
 #include "AStar.h"
+#include <fstream>
 
 // Function prototypes
 void trimWhiteSpace(std::string& str);
@@ -16,23 +17,26 @@ void createMap(std::pair<int, int>& start, std::pair<int, int>& goal, std::vecto
 void validateMenuChoice(std::string& choice, std::string choiceOne, std::string choiceTwo, std::string choiceThree);
 void validateMapDimensions(int& rowSize, int& colSize);
 void validateChosenPosition(int& xPos, int& yPos, const std::vector< std::vector<char> >& customMap);
-void validateObstacleChoice(std::string& choice);
+void validateYesNo(std::string& choice);
 void validateInt(int& input);
 void askStartGoalPositions(std::pair<int, int>& start, std::pair<int, int>& goal, std::vector< std::vector<char> >& customMap);
+void askFileCreation(std::string& fileChoice);
+void printMapToFile(std::ofstream& file, const std::vector< std::vector<char> >& userMap, const std::string& algorithm);
 
 
 int main()
 {
     std::vector< std::pair<int, int> > path;
-    std::vector< std::vector<char> > userMap;
+    std::vector< std::vector<char> > userMap, finalMap;
     std::pair<int, int> start;
     std::pair<int, int> goal;
-    std::string menuChoice;
+    std::string menuChoice, algorithm;
     DepthFirstSearch pathFindDFS;
     BreadthFirstSearch pathFindBFS;
     AStar pathFindAStar;
+    std::string fileCreationChoice;
 
-    std::cout << "Welcome to the Pathfinding Visualizer\n" << std::endl;
+    std::cout << "Welcome to the Pathfinding Visualizer" << std::endl;
 
     while (menuChoice.compare("quit") != 0)
     {
@@ -136,6 +140,9 @@ int main()
                 pathFindDFS.setGoal(goal);
                 pathFindDFS.setBoardMap(userMap);
                 path = pathFindDFS.findPath();
+
+                algorithm = "Algorithm: Depth First Search";
+                finalMap = pathFindDFS.getBoardMap();
             }
             else if (menuChoice.compare("bfs") == 0)
             {
@@ -143,6 +150,9 @@ int main()
                 pathFindBFS.setGoal(goal);
                 pathFindBFS.setBoardMap(userMap);
                 path = pathFindBFS.findPath();
+
+                algorithm = "Algorithm: Breadth First Search";
+                finalMap = pathFindBFS.getBoardMap();
             }
             else if (menuChoice.compare("astar") == 0)
             {
@@ -150,6 +160,9 @@ int main()
                 pathFindAStar.setGoal(goal);
                 pathFindAStar.setBoardMap(userMap);
                 path = pathFindAStar.findPath();
+
+                algorithm = "Algorithm: A Star";
+                finalMap = pathFindAStar.getBoardMap();
             }
 
             // -1 means that each class returned path not found
@@ -163,18 +176,70 @@ int main()
                 std::cout << "The X represents all coordinates or nodes discovered by the AI" << std::endl;
                 std::cout << "The O represents the path found and traveled beginning from S towards the goal G while avoiding the obstacles *\n" << std::endl;
             }
+
+            askFileCreation(fileCreationChoice);
+
+            if (fileCreationChoice.compare("Y") == 0)
+            {
+                std::ofstream mapFile("pathfinded_map.txt");
+                printMapToFile(mapFile, finalMap, algorithm);
+            }
         }
 
         start = {};
         goal = {};
         userMap.clear();
         path.clear();
-
-        std::cout << "\nThank you for using the Pathfinding visualizer!" << std::endl;
+        algorithm.clear();
     }
+
+    std::cout << "\nThank you for using the Pathfinding visualizer!" << std::endl;
 
     return 0;
 }
+
+// Files
+void askFileCreation(std::string& fileChoice)
+{
+    std::cout << "Would you like to save the map to a text file? (Y or N)" << std::endl;
+    std::getline(std::cin, fileChoice);
+
+    validateYesNo(fileChoice);
+}
+
+void printMapToFile(std::ofstream& file, const std::vector< std::vector<char> >& userMap, const std::string& algorithm)
+{
+    file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
+
+    try
+    {
+        file << "The map created after the path has been found if no obstacles blocked the goal:\n";
+        file << "X represents cells discovered, O represents the path taken to travel from start to the goal\n";
+        file << algorithm << "\n\n";
+
+        for (int i = 0; i < userMap.size(); ++i)
+        {
+            file << "|";
+
+            for (int j = 0; j < userMap[i].size(); ++j)
+            {
+                file << userMap[i][j] << "|";
+            }
+
+                file << "\n";
+        }
+
+        file.close();
+
+        std::cout << "File saved!" << std::endl;
+    }
+    catch (std::ofstream::failure& exc)
+    {
+        std::cerr << exc.what() << std::endl;
+        file.close();
+    }
+}
+
 
 // Map creation
 void askMapDimensions(int& rowSize, int& colSize)
@@ -236,7 +301,7 @@ void askObstacles(std::vector< std::vector<char> >& customMap)
     std::cout << "Would you like to add a obstacle? (Y or N)" << std::endl;
     std::getline(std::cin, choice);
 
-    validateObstacleChoice(choice);
+    validateYesNo(choice);
 
     while (choice.compare("Y") == 0)
     {
@@ -255,7 +320,7 @@ void askObstacles(std::vector< std::vector<char> >& customMap)
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Would you like to add another obstacle? (Y or N)" << std::endl;
         std::getline(std::cin, choice);
-        validateObstacleChoice(choice);
+        validateYesNo(choice);
     }
 }
 
@@ -307,7 +372,6 @@ void displayAlgoMenu()
     std::cout << "aStar - A Star or A* which uses a priority queue, this is the most quickest and efficient of the three" << std::endl;
 }
 
-
 // Input Validation
 void validateInt(int& input)
 {
@@ -321,7 +385,7 @@ void validateInt(int& input)
       }
 }
 
-void validateObstacleChoice(std::string& choice)
+void validateYesNo(std::string& choice)
 {
     trimWhiteSpace(choice);
 
@@ -331,7 +395,6 @@ void validateObstacleChoice(std::string& choice)
     while (choice.size() > 1 || (choice[0] != 'Y' && choice[0] != 'N'))
     {
         std::cout << "\nInvalid input, please either type Y or N" << std::endl;
-        std::cout << "Would you like to add a obstacle? (Y or N)" << std::endl;
         std::getline(std::cin, choice);
 
         trimWhiteSpace(choice);
