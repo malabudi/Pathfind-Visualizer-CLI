@@ -414,8 +414,11 @@ void validateChosenPosition(int& xPos, int& yPos, const std::vector< std::vector
         std::cout << "\nThe position you have chosen is either out of bounds or already taken, please try again." << std::endl;
         std::cout << "Please enter the x value for the position on the map: " << std::endl;
         std::cin >> xPos;
+        validateInt(xPos);
+
         std::cout << "Please enter the y value for the position on the map: " << std::endl;
         std::cin >> yPos;
+        validateInt(yPos);
     }
 }
 
@@ -427,9 +430,11 @@ void validateMapDimensions(int& rowSize, int& colSize)
 
         std::cout << "How many rows would you like to have for your map: ";
         std::cin >> rowSize;
+        validateInt(rowSize);
 
         std::cout << "How many columns would you like to have for your map: ";
         std::cin >> colSize;
+        validateInt(rowSize);
     }
 }
 
@@ -450,7 +455,6 @@ void validateMenuChoice(std::string& choice, std::string choiceOne, std::string 
 
 void trimWhiteSpace(std::string& str)
 {
-    const std::string whitespace = " \n\t\r\f";
-    str.erase(0, str.find_first_not_of(whitespace));
-    str.erase(str.find_last_not_of(whitespace) + 1);
+    str.erase(0, str.find_first_not_of(" \n\t\r\f"));
+    str.erase(str.find_last_not_of(" \n\t\r\f") + 1);
 }
